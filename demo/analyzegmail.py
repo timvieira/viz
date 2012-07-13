@@ -20,6 +20,7 @@ try:
 except ImportError:
     pass
 
+from sys import argv
 from getpass import getpass
 from imaplib import IMAP4_SSL
 from datetime import date, timedelta, datetime
@@ -66,6 +67,7 @@ def plot_diurnal(headers):
                 s = h[1][5:].strip()
                 x = dateutil.parser.parse(s)
             except ValueError:
+                print
                 print marquee(' ERROR: skipping ')
                 print h
                 print marquee()
@@ -99,8 +101,7 @@ def plot_daily_distribution(ytime):
 
 def main():
     print 'Fetching emails...'
-
-    email = 'timsfanmail@gmail.com'
+    email = argv[1]
     pw = getpass()
     headers = get_headers(email, pw,
                           #'inbox',
