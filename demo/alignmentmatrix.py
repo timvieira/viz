@@ -1,13 +1,17 @@
+#!/usr/bin/env python
+"""
+Simple attempt at a machine translation style word alignment matrix.
+"""
+
 import numpy as np
 import pylab as pl
 from debug import ip
-
-def extraction_set(e, f, a):
-    pass
+#from matplotlib.patches import FancyBboxPatch, Rectangle, BoxStyle
+#from matplotlib.collections import PatchCollection
 
 
 def align(E, F, threshold = 0.25):
-    "Really simple aligner."
+    "Very simple aligner based of word similarity threshold."
 
     def score(e,f):
         "Score affinity between two words."
@@ -20,10 +24,6 @@ def align(E, F, threshold = 0.25):
             a[i,j] = score(e, f) >= threshold
 
     return a
-
-
-from matplotlib.patches import FancyBboxPatch, Rectangle, BoxStyle
-from matplotlib.collections import PatchCollection
 
 
 def draw_alignment(E, F, A):
@@ -72,8 +72,6 @@ def test():
     print a
 
     draw_alignment(e, f, a)
-
-    extraction_set(e, f, a)
 
     pl.show()
 

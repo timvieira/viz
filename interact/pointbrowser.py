@@ -147,7 +147,7 @@ class PointBrowser(object):
 
 
 #------------------------------------------------------------------------------
-# TODO: zooming is busted. This should be an easy fix.
+# TODO: zooming is busted... should be an easy fix.
 #------------------------------------------------------------------------------
 #        elif event.key in ('=', '+'):
 #            self.zoom(0.01)
@@ -172,20 +172,20 @@ class PointBrowser(object):
 #   they keep the same absolute position on the screen even though they should
 #   have moved along with the point.
 #------------------------------------------------------------------------------
-        elif event.key == 'i':
-            idx = self.idxs[self.index]
-            picked = self.X.ix[idx]
-            x = picked[self.xcol]
-            y = picked[self.ycol]
-            l = 'Point(%.2f,%.2f)' % (x, y)
-            a = self.ax.annotate(l, xy=(x, y),
-                                 xytext=(0, -30), textcoords='offset points',
-                                 arrowprops=dict(arrowstyle="->",
-                                 connectionstyle="angle,angleA=0,angleB=90,rad=10",
-                                                 color='k', alpha=0.5),
-                                 fontsize=9, #rotation=90,
-                                 color='k', alpha=0.5)
-            a.draggable(use_blit=True)
+#        elif event.key == 'i':
+#            idx = self.idxs[self.index]
+#            picked = self.X.ix[idx]
+#            x = picked[self.xcol]
+#            y = picked[self.ycol]
+#            l = 'Point(%.2f,%.2f)' % (x, y)
+#            a = self.ax.annotate(l, xy=(x, y),
+#                                 xytext=(0, -30), textcoords='offset points',
+#                                 arrowprops=dict(arrowstyle="->",
+#                                 connectionstyle="angle,angleA=0,angleB=90,rad=10",
+#                                                 color='k', alpha=0.5),
+#                                 fontsize=9, #rotation=90,
+#                                 color='k', alpha=0.5)
+#            a.draggable(use_blit=True)
 #------------------------------------------------------------------------------
 
         self.draw()
