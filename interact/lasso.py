@@ -10,13 +10,14 @@ inside polygon detection routine.
 from matplotlib.widgets import Lasso
 from matplotlib.nxutils import points_inside_poly
 from matplotlib.collections import RegularPolyCollection
-
-from numpy import nonzero
-
-from debug import ip
-
 from matplotlib.colors import colorConverter
 to_rgba = colorConverter.to_rgba
+from numpy import nonzero
+
+try:
+    from debug import ip
+except ImportError:
+    pass
 
 
 class LassoManager(object):
@@ -58,7 +59,7 @@ class LassoManager(object):
         if event.inaxes is None:
             return
         self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.callback)
-        self.canvas.widgetlock(self.lasso)  # acquire lock on this lasso widget
+        self.canvas.widgetlock(self.lasso)  # acquire lock on lasso widget
         self.lasso_lock = True              # used when we release
 
     def onrelease(self, event):
@@ -71,6 +72,7 @@ class LassoManager(object):
 
 def example():
     import matplotlib.pyplot as pl
+    pl.ioff()
 
     import pandas
     from numpy.random import uniform
@@ -80,9 +82,6 @@ def example():
                           'y': uniform(-1, 1, size=n),
                           'size': uniform(3, 10, size=n) ** 2,
                           'color': uniform(0, 1, size=n)})
-
-
-    print m
 
     ax = pl.subplot(111)
     lman = LassoManager(ax, m)
