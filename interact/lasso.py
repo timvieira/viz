@@ -72,7 +72,8 @@ class LassoManager(object):
 
 def example():
     import matplotlib.pyplot as pl
-    pl.ioff()
+#    pl.ioff()
+    pl.ion()
 
     import pandas
     from numpy.random import uniform
@@ -89,6 +90,8 @@ def example():
     pl.scatter(m['x'], m['y'])
 
     pl.show()
+
+    ip()
 
 if __name__ == '__main__':
     example()
