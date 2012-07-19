@@ -45,4 +45,6 @@ def mds_plot3D(points, distance):
     map(ax.text, Y[:,0], Y[:,1], Y[:,2], points)  # add labels to points
     #pylab.grid(True)
 
-
+if __name__ == '__main__':
+    from viz.demo import mds_twitter
+    mds_twitter.main()
