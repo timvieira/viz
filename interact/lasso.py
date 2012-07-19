@@ -14,11 +14,14 @@ TODO:
       shift-click many points this makes it much more like lasso.
 
 """
+import matplotlib.pylab as pl
 from matplotlib.widgets import Lasso
 from matplotlib.nxutils import points_inside_poly
 from matplotlib.collections import RegularPolyCollection
 from matplotlib.colors import colorConverter
 from numpy import nonzero, array
+
+import matplotlib.pyplot as pl
 
 to_rgba = colorConverter.to_rgba
 
@@ -30,13 +33,15 @@ except ImportError:
 
 class LassoBrowser(object):
 
-    def __init__(self, ax, df, xcol='x', ycol='y'):
+    def __init__(self, df, ax=None, xcol='x', ycol='y', callback=None):
         self.df = df
-        self.ax = ax
+        self.ax = ax or pl.gca()
         self.canvas = ax.figure.canvas
         self.lasso_lock = False             # indicates if another widget event has priority
         self.idxs = array(list(self.df.T))  # look up parallel with point indices
         self.xys = df[[xcol, ycol]].values
+
+        # timv: don't think this PolyCollection is needed..
         self.collection = RegularPolyCollection(numsides=ax.figure.dpi,
                                                 rotation=6,
                                                 sizes=(100,),
@@ -45,6 +50,8 @@ class LassoBrowser(object):
                                                 offsets = self.xys,
                                                 transOffset = ax.transData)
         ax.add_collection(self.collection)
+
+        self.user_callback = callback
 
         self.canvas.mpl_connect('button_press_event', self.onpress)
         self.canvas.mpl_connect('button_release_event', self.onrelease)
@@ -60,7 +67,12 @@ class LassoBrowser(object):
 
         # convert from point indices to dataframe indices
         idx = self.idxs[selected]
-        print self.df.ix[idx]      # show selected rows of dataframe
+        m = self.df.ix[idx]      # show selected rows of dataframe
+
+        if self.user_callback is None:
+            print m
+        else:
+            self.user_callback(m)
 
         self.canvas.draw_idle()
         self.canvas.widgetlock.release(self.lasso)
@@ -84,7 +96,6 @@ class LassoBrowser(object):
 
 
 def example():
-    import matplotlib.pyplot as pl
 #    pl.ioff()
     pl.ion()
 
@@ -106,10 +117,10 @@ def example():
     print m
 
     ax = pl.subplot(111)
-    b = LassoBrowser(ax, m)
-    print b.idxs
+    plt = ax.scatter(m['x'], m['y'])
 
-    plt = pl.scatter(m['x'], m['y'])
+    b = LassoBrowser(m, ax)
+    print b.idxs
 
     #from viz.interact.pointbrowser import PointBrowser
     #pb = PointBrowser(m, plot=plt)
