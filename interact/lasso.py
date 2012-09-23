@@ -40,6 +40,8 @@ class LassoBrowser(object):
         self.lasso_lock = False             # indicates if another widget event has priority
         self.idxs = array(list(self.df.T))  # look up parallel with point indices
         self.xys = df[[xcol, ycol]].values
+        self.xcol = xcol
+        self.ycol = ycol
 
         # timv: don't think this PolyCollection is needed..
         self.collection = RegularPolyCollection(numsides=ax.figure.dpi,
@@ -52,14 +54,18 @@ class LassoBrowser(object):
         ax.add_collection(self.collection)
 
         self.user_callback = callback
-
+        self.canvas.mpl_connect('key_press_event', self.onpress)
         self.canvas.mpl_connect('button_press_event', self.onpress)
         self.canvas.mpl_connect('button_release_event', self.onrelease)
-        self.selected = []
+        self.selected = None
         self.lasso = None
 
     def lasso_callback(self, verts):
-        [selected] = nonzero(points_inside_poly(self.xys, verts))
+        if verts is not None and len(verts):
+            [selected] = nonzero(points_inside_poly(self.xys, verts))
+        else:
+            selected = []
+
         # change face colors inplace
         facecolors = self.collection.get_facecolors()
         facecolors[:] = to_rgba('green', alpha=0.0)
@@ -83,6 +89,23 @@ class LassoBrowser(object):
             return
         if event.inaxes is None:
             return
+
+        if event.key in ('escape',):
+            self.selected = []
+            self.lasso_callback([])
+            return
+
+        # TODO: implement zoom out as undo.
+        # zoom in to selection
+        if event.key in ('+', '='):
+            selected_rows = self.df.ix[self.selected]
+            xs = selected_rows[self.xcol]
+            ys = selected_rows[self.ycol]
+            self.ax.set_xlim(xs.min(), xs.max())
+            self.ax.set_ylim(ys.min(), ys.max())
+            self.canvas.draw()
+            return
+
         self.lasso = Lasso(event.inaxes, (event.xdata, event.ydata), self.lasso_callback)
         self.canvas.widgetlock(self.lasso)  # acquire lock on lasso widget
         self.lasso_lock = True              # used when we release
