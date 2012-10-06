@@ -25,10 +25,12 @@ from getpass import getpass
 from imaplib import IMAP4_SSL
 from datetime import date, timedelta, datetime
 from time import mktime
-from email.utils import parsedate
 from pylab import plot_date, show, xticks, date2num
 from pylab import figure, hist, num2date
 from matplotlib.dates import DateFormatter
+import dateutil
+from iterextras import iterview
+from terminal import marquee
 
 def get_headers(address, password, folder, d):
     """ Retrieve headers of the emails from d days ago until now. """
@@ -38,18 +40,14 @@ def get_headers(address, password, folder, d):
     mail.select(folder)
     # retrieving the uids
     interval = (date.today() - timedelta(d)).strftime("%d-%b-%Y")
-    _, data = mail.uid('search', None,
-                       '(SENTSINCE {date})'.format(date=interval))
+    [_, data] = mail.uid('search', None,
+                         '(SENTSINCE {date})'.format(date=interval))
     # retrieving the headers
-    _, data = mail.uid('fetch', data[0].replace(' ',','),
-                       '(BODY[HEADER.FIELDS (DATE)])')
+    [_, data] = mail.uid('fetch', data[0].replace(' ',','),
+                         '(BODY[HEADER.FIELDS (DATE)])')
     mail.close()
     mail.logout()
     return data
-
-import dateutil
-from iterextras import iterview
-from terminal import red, marquee
 
 
 def plot_diurnal(headers):
@@ -59,7 +57,6 @@ def plot_diurnal(headers):
     """
     xday = []
     ytime = []
-
     print 'making diurnal plot...'
     for h in iterview(headers):
         if len(h) > 1:
@@ -72,7 +69,6 @@ def plot_diurnal(headers):
                 print h
                 print marquee()
                 continue
-
             timestamp = mktime(x.timetuple())   # convert datetime into floating point number
             mailstamp = datetime.fromtimestamp(timestamp)
             xday.append(mailstamp)
@@ -114,6 +110,7 @@ def main():
     plot_daily_distribution(ytime)
     print len(xday),'Emails analysed.'
     show()
+
 
 if __name__ == '__main__':
     main()
