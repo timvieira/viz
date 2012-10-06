@@ -1,6 +1,7 @@
 from viz.mds import mds, mds_plot2D, mds_plot3D
 from numpy import array, zeros, reshape, shape
 
+import numpy as np
 import pylab as pl
 
 # hack the sys path to import twitter similarity metric
@@ -22,11 +23,11 @@ from os import path
 import mds_twitter
 tweet_cache = path.join(path.dirname(path.abspath(mds_twitter.__file__)), 'tweets.pkl~')
 
-from viz.interact import LassoBrowser
+from viz.interact import LassoBrowser, PointBrowser
 
 
 def main(usecached=True):
-    if usecached:
+    if usecached and path.exists(tweet_cache):
         (users, distance) = pickle.load(file(tweet_cache, 'r'))
     else:
         sets = example_data()
@@ -54,7 +55,7 @@ def main(usecached=True):
         'obj': users,
     })
 
-    sct = pl.scatter(Y[:,0], Y[:,1], s=30, c='b', lw=0)
+    sct = pl.scatter(Y[:,0], Y[:,1], s=30*np.ones_like(users), c='b', lw=0)
     for user, x, y in zip(labels, Y[:,0], Y[:,1]):
         pl.text(x, y, user, fontsize=7)
     pl.grid(False)
@@ -68,15 +69,27 @@ def main(usecached=True):
                 pl.plot(x, y, lw=10.0*distance[i,j], alpha=distance[i,j], c='k')
 
 
-    def callback(m):
-        if m.empty:
-            return
-        print '***********************************'
-        common_words = reduce(set.intersection, m['obj'].map(lambda x: x.features))
-        print common_words
-        print '***********************************'
-
-    b = LassoBrowser(X, ax=sct.get_axes(), callback=callback)
+    if 0:
+        # TODO: I want points to resize according proportional to similarity to
+        # selected point. I'm having trouble getting matplotlib to do this for
+        # me -- such an inconsistent API!
+        def callback(br, m):
+            _ = users, sct   # FIXME: ip only seems to take local and global; sct is neither..
+            newsizes = np.array(map(m.ix[0].similarity, users)) * 30
+            #s = sct.get_sizes()
+            #s[:] = newsizes
+            sct._sizes = newsizes
+            ip()
+        b = PointBrowser(X, ax=sct.get_axes(), callback=callback)
+    else:
+        def callback(m):
+            if m.empty:
+                return
+            print '***********************************'
+            common_words = reduce(set.intersection, m['obj'].map(lambda x: x.features))
+            print common_words
+            print '***********************************'
+        b = LassoBrowser(X, ax=sct.get_axes(), callback=callback)
 
     #mds_plot2D(labels, distance)
     #mds_plot3D(labels, distance)
