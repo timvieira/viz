@@ -15,8 +15,8 @@ import Image
 
 import pandas
 
-from debug import ip
-from terminal import yellow
+from arsenal.debug import ip
+from arsenal.terminal import yellow
 
 # place to cache data
 from os import path

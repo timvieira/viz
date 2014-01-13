@@ -7,7 +7,7 @@ Click on a line to make it think.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from debug import ip
+from arsenal.debug import ip
 
 
 class LinePicker(object):

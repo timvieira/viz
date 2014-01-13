@@ -15,10 +15,7 @@ In order to plot those graphs I created three functions. The first one, retrieve
 the headers of the emails we want to analyze:
 """
 
-try:
-    from debug import ip
-except ImportError:
-    pass
+from arsenal.debug import ip
 
 from sys import argv
 from getpass import getpass
@@ -29,8 +26,8 @@ from pylab import plot_date, show, xticks, date2num
 from pylab import figure, hist, num2date
 from matplotlib.dates import DateFormatter
 import dateutil
-from iterextras import iterview
-from terminal import marquee
+from arsenal.iterextras import iterview
+from arsenal.terminal import marquee
 
 def get_headers(address, password, folder, d):
     """ Retrieve headers of the emails from d days ago until now. """

@@ -33,12 +33,13 @@ import matplotlib as mpl
 
 # development utils
 try:
-    from debug import ip
+    from arsenal.debug import ip
 except ImportError:
     pass
 #from matplotlib.text import Annotation
 
 def print_row(browser, row):
+    print
     print row
 
 class PointBrowser(object):
@@ -63,7 +64,7 @@ class PointBrowser(object):
             ax = pl.subplot(111)
 
         if plot is None:
-            plot = ax.scatter(X[xcol], X[ycol])
+            plot = ax.scatter(X[xcol], X[ycol], lw=0)
             ax.grid(True)
             ax.set_xlabel(xcol)
             ax.set_ylabel(ycol)
@@ -120,15 +121,15 @@ class PointBrowser(object):
 
             # map arrows to offsets
             (a, dim) = {
-                'left':  (-1, 'x'),
-                'right': (+1, 'x'),
-                'up':    (+1, 'y'),
-                'down':  (-1, 'y'),
+                'left':  (-1, self.xcol),
+                'right': (+1, self.xcol),
+                'up':    (+1, self.ycol),
+                'down':  (-1, self.ycol),
             }[event.key]
 
             # if there was no circle, put one around the current point
             if self.circle is None:
-                x, y = row['x'], row['y']   # position of current point
+                x, y = row[self.xcol], row[self.ycol]   # position of current point
                 r = 0.25 # something smaller than the nearest point?
                 self.circle = mpl.patches.Circle((x, y), r, alpha=0.3, fc='y')
                 self.ax.add_patch(self.circle)
@@ -155,10 +156,10 @@ class PointBrowser(object):
 #            self.zoom(1.01)
 #------------------------------------------------------------------------------
 
-        elif event.key == 'n':   # move to next point
-            self.next_point(+1)
-        elif event.key == 'p':
-            self.next_point(-1)  # move to previous point
+#        elif event.key == 'n':   # move to next point
+#            self.next_point(+1)
+#        elif event.key == 'p':
+#            self.next_point(-1)  # move to previous point
 
 #------------------------------------------------------------------------------
 # TODO: adding annotations (labels) works, but isn't ideal because labels are

@@ -5,7 +5,7 @@ Simple attempt at a machine translation style word alignment matrix.
 
 import numpy as np
 import pylab as pl
-from debug import ip
+
 #from matplotlib.patches import FancyBboxPatch, Rectangle, BoxStyle
 #from matplotlib.collections import PatchCollection
 

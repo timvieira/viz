@@ -18,9 +18,9 @@ x = linspace(1.0, 9.0, num=257, endpoint=True)
 y1 = 1.5 + 10.0 * (sin(x) * sin(x) / sqrt(x)) * exp(-0.5 * (x - 5.0) * (x - 5.0))
 y2 = 3.0 + 10.0 * (sin(x) * sin(x) / sqrt(x)) * exp(-0.5 * (x - 7.0) * (x - 7.0))
 
-#y1 *= rand_func()
-#y2 *= rand_func()
-#x *= rand_func()
+y1 *= rand_func()
+y2 *= rand_func()
+x *= rand_func()
 
 # Set up a figure
 fig = figure()
@@ -50,16 +50,14 @@ ax.plot(xaxis, yaxis, 'k', lw=2)
 ax.arrow(1, 7, 0, 0.1, fc='k', lw=2, head_width=0.2, head_length=0.15)
 # Font is available here: http://antiyawn.com/uploads/Humor-Sans.ttf
 from os import path
-print __file__
 prop = fm.FontProperties(fname=path.join(path.dirname(path.abspath(__file__)), 'Humor-Sans.ttf'))
 ax.text(4.5, 0.5, 'PEAK', fontproperties=prop, size=14)
 ax.text(0.1, 7.5, 'intensity', fontproperties=prop, size=14, rotation=75)
 ax.text(9, 0.6, 'time', fontproperties=prop, size=14, rotation=5)
 
 ax.axison = False
-# Save
-#fig.savefig('xkcd.svg')
-#from IPython.core.display import SVG
-#SVG(filename='.svg')
+
+ax.figure.set_facecolor('white')
+ax.set_axis_off()
 
 show()
