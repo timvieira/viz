@@ -7,7 +7,6 @@ import numpy as np
 from pylab import draw, show, figure
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox, DraggableAnnotation, DraggableBase
 
-from debug import ip
 
 def onpress(event):
     print event.key
