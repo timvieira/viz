@@ -18,7 +18,7 @@ TODO:
  - Interaction with plots. Ideally, we can apply these interaction features to
    any axis so that matplotlib feels more like Wolfram Mathematica plots.
     * Pan: click-and-drag on background (maybe with modifier key like shift).
-    * Zoo: double-click on background
+    * Zoom: double-click on background
 
  - The point browser does not need to be limited to points. Anything represented
    as a matplotlib Artists can be clicked on (they all have the picker

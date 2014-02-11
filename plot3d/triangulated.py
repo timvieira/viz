@@ -13,7 +13,7 @@ def triangulated_surface(x,y,z):
     3d surface plot of irregularly space samples. Surface is found by tessulating XY plane.
     """
 
-    # Create a triangulation of our region.  We will re-use this for both curves.
+    # Create a triangulation of our region.
     _, _, tri_points, _ = delaunay(x, y)
 
     data = np.array([x,y,z]).T
@@ -25,7 +25,7 @@ def triangulated_surface(x,y,z):
     # dictates the colour.  In this case we'll just use the average z
     # co-ordinate of the three triangle vertices.  One of these values is
     # required for each face (triangle).
-    z_color = np.array([(np.sum( v_p[:,2]) / 3.0) for v_p in verts])
+    z_color = np.array([(np.sum(v_p[:,2]) / 3.0) for v_p in verts])
 
     # Choiced for colour maps are :
     #   autumn bone cool copper flag gray hot hsv jet pink prism spring summer
@@ -38,7 +38,7 @@ def triangulated_surface(x,y,z):
     triCol = Poly3DCollection(verts, cmap=cm)
 
     triCol.set_edgecolor('k')
-    triCol.set_linewidth(0.75)
+    triCol.set_linewidth(0.1)
 
     # Set the value array associated with the polygons.
     triCol.set_array(z_color)
@@ -113,9 +113,9 @@ def main():
     # Compute the first function of (x,y)
     z = 2.0 - 1.0 * (x[:]**2 + y[:]**2) - 0.5*y[:]
 
-    triplot(x,y,z)
+    triangulated_surface(x,y,z)
 
-    mayavi_version(x,y,z)
+#    mayavi_version(x,y,z)
 
 
 if __name__ == '__main__':
