@@ -48,7 +48,7 @@ class PointBrowser(object):
     """
 
     def __init__(self, X, xcol='x', ycol='y', callback=print_row,
-                 ax=None, plot=None):
+                 ax=None, plot=None, plot_kwargs=None):
         self.index = 0
         self.callback = callback
         self.X = X
@@ -64,7 +64,10 @@ class PointBrowser(object):
             ax = pl.subplot(111)
 
         if plot is None:
-            plot = ax.scatter(X[xcol], X[ycol], lw=0)
+            kwargs = dict(lw=0, alpha=0.5)
+            if plot_kwargs is not None:
+                kwargs.update(plot_kwargs)
+            plot = ax.scatter(X[xcol], X[ycol], **kwargs)
             ax.grid(True)
             ax.set_xlabel(xcol)
             ax.set_ylabel(ycol)
