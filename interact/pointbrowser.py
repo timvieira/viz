@@ -222,7 +222,7 @@ class PointBrowser(object):
         Y = self.X[self.ycol][event.ind]
         distances = np.hypot(x - X, y - Y)  # distance to pts within tolerance
         idx = distances.argmin()
-        self.index = event.ind[idx]
+        self.index = idx
         self.update()
 
     def update(self):
