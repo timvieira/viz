@@ -1,5 +1,4 @@
 """
-
 TODO:
 
  - Accidental keystrokes: accidental activatation of strange interaction modes
@@ -221,13 +220,18 @@ class PointBrowser(object):
         X = self.X[self.xcol][event.ind]
         Y = self.X[self.ycol][event.ind]
         distances = np.hypot(x - X, y - Y)  # distance to pts within tolerance
-        idx = distances.argmin()
+        distances = distances[np.isfinite(distances)]  # filter NaN and infinity
+        if distances.shape[0] == 0:  # check that we don't have an empty sequence
+            print '[pointbrowser] no points within finite distance'
+            return
+        idx = distances.argmin()   # distances must be Series for argmin to
+                                   # correspond to index in dataframe.
         self.index = idx
         self.update()
 
     def update(self):
         i = self.index
-        idx = self.idxs[i]
+        idx = int(self.idxs[i])
         picked = self.selected_row = self.X.ix[idx]
         self.select_point(picked[self.xcol], picked[self.ycol])
         self.callback(self, picked)
