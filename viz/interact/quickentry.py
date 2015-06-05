@@ -1,8 +1,11 @@
 from Tkinter import Tk, Entry, Label, Frame, Button, LEFT, RIGHT, CENTER
 
 
-def quickentry(labels, callback, title=''):
+def quickentry(labels, callback, title='', defaults=None):
     "Simple dialog from grabbing parameters from the user."
+
+    if defaults is None:
+        defaults = {}
 
     root = Tk()
 
@@ -25,6 +28,8 @@ def quickentry(labels, callback, title=''):
         w = Entry(f)
         w['width'] = 20
         w.pack(side=LEFT)
+
+        w.insert(0, defaults.get(label, ''))
 
         widgets[label] = w
 
@@ -50,4 +55,5 @@ def quickentry(labels, callback, title=''):
 if __name__ == '__main__':
     import tkMessageBox
     quickentry(['one', 'two', 'three'],
-               lambda vs: tkMessageBox.showinfo("Values", str(vs)))
+               lambda vs: tkMessageBox.showinfo("Values", str(vs)),
+               defaults={'one': "one's default value"})

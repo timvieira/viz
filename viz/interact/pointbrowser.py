@@ -48,13 +48,13 @@ class PointBrowser(object):
 
     def __init__(self, X, xcol='x', ycol='y', callback=print_row,
                  ax=None, plot=None, plot_kwargs=None):
-        self.index = 0
         self.callback = callback
         self.X = X
         self.xcol = xcol
         self.ycol = ycol
         self.idxs = list(self.X.T)
         self.selected_row = None
+        self.ix = None
 
         if plot is not None:
             ax = plot.get_axes()
@@ -73,7 +73,7 @@ class PointBrowser(object):
 
         # make sure picker is enabled
         if not plot.get_picker():
-            plot.set_picker(5)
+            plot.set_picker(10)
 
         self.fig = ax.get_figure()
         self.ax = ax
@@ -86,7 +86,7 @@ class PointBrowser(object):
 
         # register event handlers
         self.fig.canvas.mpl_connect('pick_event', self.onpick)
-        self.fig.canvas.mpl_connect('key_press_event', self.onpress)
+        #self.fig.canvas.mpl_connect('key_press_event', self.onpress)
 
     def select_point(self, x, y):
         # TODO: might want to use a cursor (hline and vline) because it's easier
@@ -98,10 +98,10 @@ class PointBrowser(object):
         self.selected.set_data(x, y)
         keep_in_view(self.ax, x, y)
 
-    def onpress(self, event):
-        if self.index is None:     # nothing happend
-            return
-
+#    def onpress(self, event):
+#        if self.index is None:     # nothing happend
+#            return
+#
 # Pan
 #        elif event.key == 'right':
 #            self.ax.xaxis.pan(+0.2)
@@ -113,40 +113,40 @@ class PointBrowser(object):
 #           self.ax.yaxis.pan(-0.2)
 
 # Point cloud navigation
-        if event.key in ('right', 'left', 'up', 'down'):
-            row = self.selected_row
-
-            if row is None:  # pick a point so that next time we can continue.
-                self.next_point(+1)
-                self.update()
-                return
-
-            # map arrows to offsets
-            (a, dim) = {
-                'left':  (-1, self.xcol),
-                'right': (+1, self.xcol),
-                'up':    (+1, self.ycol),
-                'down':  (-1, self.ycol),
-            }[event.key]
-
-            # if there was no circle, put one around the current point
-            if self.circle is None:
-                x, y = row[self.xcol], row[self.ycol]   # position of current point
-                r = 0.25 # something smaller than the nearest point?
-                self.circle = mpl.patches.Circle((x, y), r, alpha=0.3, fc='y')
-                self.ax.add_patch(self.circle)
-
-            else:
-                x, y = self.circle.center
-                a = 0.1 * a
-                if dim == 'x':
-                    x += a
-                if dim == 'y':
-                    y += a
-                self.circle.center = (x, y)
-
-            self.update()
-            return  # return here to avoid calling super.onpress
+#        if event.key in ('right', 'left', 'up', 'down'):
+#            row = self.selected_row
+#
+#            if row is None:  # pick a point so that next time we can continue.
+#                self.next_point(+1)
+#                self.update()
+#                return
+#
+#            # map arrows to offsets
+#            (a, dim) = {
+#                'left':  (-1, self.xcol),
+#                'right': (+1, self.xcol),
+#                'up':    (+1, self.ycol),
+#                'down':  (-1, self.ycol),
+#            }[event.key]
+#
+#            # if there was no circle, put one around the current point
+#            if self.circle is None:
+#                x, y = row[self.xcol], row[self.ycol]   # position of current point
+#                r = 0.25 # something smaller than the nearest point?
+#                self.circle = mpl.patches.Circle((x, y), r, alpha=0.3, fc='y')
+#                self.ax.add_patch(self.circle)
+#
+#            else:
+#                x, y = self.circle.center
+#                a = 0.1 * a
+#                if dim == 'x':
+#                    x += a
+#                if dim == 'y':
+#                    y += a
+#                self.circle.center = (x, y)
+#
+#            self.update()
+#            return  # return here to avoid calling super.onpress
 
 
 #------------------------------------------------------------------------------
@@ -203,9 +203,9 @@ class PointBrowser(object):
     def draw(self):
         self.fig.canvas.draw()
 
-    def next_point(self, inc):
-        self.index = (self.index + inc) % len(self.idxs)
-        self.update()
+#    def next_point(self, inc):
+#        self.index = (self.index + inc) % len(self.idxs)
+#        self.update()
 
     def onpick(self, event):
         # filter-out irrelevant events
@@ -217,22 +217,25 @@ class PointBrowser(object):
         x, y = event.mouseevent.xdata, event.mouseevent.ydata
         # There may be more than one point with-in the specified tolerance;
         # we'll take the closest of those point (using Euclidean distance).
-        X = self.X[self.xcol][event.ind]
-        Y = self.X[self.ycol][event.ind]
+
+        X = self.X[self.xcol][[self.idxs[i] for i in event.ind]]
+        Y = self.X[self.ycol][[self.idxs[i] for i in event.ind]]
+
+        #X = self.X[self.xcol][event.ind]
+        #Y = self.X[self.ycol][event.ind]
+
         distances = np.hypot(x - X, y - Y)  # distance to pts within tolerance
         distances = distances[np.isfinite(distances)]  # filter NaN and infinity
         if distances.shape[0] == 0:  # check that we don't have an empty sequence
             print '[pointbrowser] no points within finite distance'
             return
-        idx = distances.argmin()   # distances must be Series for argmin to
-                                   # correspond to index in dataframe.
-        self.index = idx
+        self.ix = distances.argmin()   # distances must be Series for argmin to
+                                       # correspond to index in dataframe.
+        #self.index = np.abs(self.idxs-idx).argmin()
         self.update()
 
     def update(self):
-        i = self.index
-        idx = int(self.idxs[i])
-        picked = self.selected_row = self.X.ix[idx]
+        picked = self.selected_row = self.X.ix[self.ix]
         self.select_point(picked[self.xcol], picked[self.ycol])
         self.callback(self, picked)
         self.draw()
